@@ -1,4 +1,4 @@
-package com.androidx.rx2.condition;
+package com.androidx.rx2.scene.condition;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -54,7 +54,7 @@ public class ConditionLoopActivity extends AppCompatActivity {
                 .build();
 
         GetRequest_Interface request = retrofit.create(GetRequest_Interface.class);
-        Observable<Translation> observable = request.getCall();
+        Observable<Translation> observable = request.findTranslation();
 
         observable.repeatWhen(new Function<Observable<Object>, ObservableSource<?>>() {
             @Override

@@ -1,4 +1,4 @@
-package com.androidx.rx2.condition;
+package com.androidx.rx2.scene.condition;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -32,6 +32,8 @@ public class NoConditionLoopActivity extends AppCompatActivity {
 
     private static final String TAG = "NoConditionLoop";
 
+    private Disposable disposable;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +45,43 @@ public class NoConditionLoopActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_loop)
     public void onClick(View v) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://fy.iciba.com/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create()) //支持rxjava
+                .build();
+
+        GetRequest_Interface request = retrofit.create(GetRequest_Interface.class);
+        Observable<Translation> observable = request.findTranslation();
+
+        observable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Translation>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        Log.e(TAG, "onSubscribe");
+                    }
+
+                    @Override
+                    public void onNext(Translation translation) {
+                        Log.e(TAG, "onNext");
+                        translation.show();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "onError, " + e.getMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.e(TAG, "onComplete");
+                    }
+                });
+    }
+
+//    @OnClick(R.id.btn_loop)
+    public void onClick2(View v) {
 
 
         Observable.interval(2, 1, TimeUnit.SECONDS)
@@ -59,7 +98,7 @@ public class NoConditionLoopActivity extends AppCompatActivity {
                                 .build();
 
                         GetRequest_Interface request = retrofit.create(GetRequest_Interface.class);
-                        Observable<Translation> observable = request.getCall();
+                        Observable<Translation> observable = request.findTranslation();
 
                         observable.subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
@@ -88,28 +127,35 @@ public class NoConditionLoopActivity extends AppCompatActivity {
 
                     }
                 }).subscribe(new Observer<Long>() {
-            @Override
-            public void onSubscribe(Disposable d) {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        disposable = d;
 
-            }
+                    }
 
-            @Override
-            public void onNext(Long aLong) {
+                    @Override
+                    public void onNext(Long aLong) {
 
-            }
+                    }
 
-            @Override
-            public void onError(Throwable e) {
+                    @Override
+                    public void onError(Throwable e) {
 
-            }
+                    }
 
-            @Override
-            public void onComplete() {
+                    @Override
+                    public void onComplete() {
 
-            }
-        });
+                    }
+                });
 
     }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (disposable != null){
+            disposable.dispose();
+        }
+    }
 }

@@ -4,4 +4,5 @@
 与 retrofit、retrofit2-rxjava2-adapter、converter-gson 的结合
 
 * 无条件网络请求轮询
-* 无条件网络请求轮询
+* 有条件网络请求轮询(重复N次)
+* 用flatMap来合并两个网络请求

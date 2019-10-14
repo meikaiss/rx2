@@ -1,4 +1,4 @@
-package com.androidx.rx2.common;
+package com.androidx.rx2.scene.common;
 
 import android.app.Activity;
 import android.content.Context;

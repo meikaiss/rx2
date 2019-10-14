@@ -18,7 +18,9 @@ public class Translation {
     }
 
     //定义 输出返回数据 的方法
-    public void show() {
-        Log.e("NoConditionLoop", content.out );
+    public String show() {
+        String msg = "翻译内容为: "+content.out;
+        Log.e("NoConditionLoop", msg);
+        return msg;
     }
 }
